@@ -63,3 +63,8 @@ typings/
 # elasticsearch volumes
 elasticdata/
 
+# config
+config/
+
+#data
+data/

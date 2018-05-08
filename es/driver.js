@@ -22,6 +22,19 @@ module.exports = {
       });
     });
   },
+  createBulk: (params) => {
+    return new Promise((resolve, reject) => {
+      client.bulk({
+        maxRetries: 5,
+        index: params.index,
+        type: params.type,
+        bulk: params.bulk,
+      }, (err, resp) => {
+        if (err) reject(err);
+        resolve(resp);
+      });
+    });
+  },
   search: (params) => {
     return new Promise((resolve, reject) => {
       client.search({

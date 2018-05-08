@@ -6,7 +6,7 @@ const cleanup = require('./cleanup');
 
 const cli = () => {
   let option = '';
-  console.log('Interpreter is now running! For help type \'help\'');
+  console.log('Interpreter is now running! For help type \'help\'\n');
   while (option !== 'exit') {
     option = readline.question('> ');
     options.options.forEach((opt) => {

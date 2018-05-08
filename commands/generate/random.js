@@ -1,5 +1,5 @@
 const fs = require('fs');
-const checkValidJSON = require('../../util/check-valid-json');
+const seedFile = require('./seed/seedfile');
 
 
 const seedDir = `${__dirname}/seed`;
@@ -11,8 +11,8 @@ const generateRandomDocument = (data) => {
   }, {});
 };
 
-const randomize = (seedFile) => {
-  let fields = checkValidJSON(seedFile);
+const randomize = () => {
+  let fields = seedFile;
   let docs = new Array(5000).fill(undefined).map(() => generateRandomDocument(fields));
   fs.writeFileSync(`${seedDir}/bulk.json`, JSON.stringify(docs), 'utf8');
 };

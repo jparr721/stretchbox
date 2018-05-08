@@ -5,14 +5,12 @@ const load = require('./load/load-data');
 
 const commandHandler = (command) => {
   let input = command.split(' ');
-  console.log(input);
   switch (input[0]) {
     case 'generate':
-      console.log('HIT');
       if (input[1] === 'random') {
         let params = [input[2], input[3]];
         generate(input[1]);
-        load(true, params);
+        // load(true, params);
       } else if (input[1] === 'config') {
         generate(input[1]);
       } else usage();

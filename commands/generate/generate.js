@@ -4,6 +4,7 @@ const config = require('../generate/config');
 
 const generate = (type) => {
   if (type === 'random') {
+    console.log('Running random!');
     random();
   } else if (type === 'config') {
     config();

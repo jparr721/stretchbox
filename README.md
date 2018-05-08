@@ -1,4 +1,4 @@
-# Stretchbox v1.1.0
+# Stretchbox v1.2.14
 🚀 Elasticsearch local docker env for testing goodness
 
 ## What is this?

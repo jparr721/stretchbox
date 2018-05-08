@@ -5,6 +5,4 @@ const seedData = {
   'colors': ['blue', 'black', 'orange', 'African American', 'SJW', 'Red', 'Demon-Yellow', 'grey', 'Color Is a Lie'],
 };
 
-const stringData = JSON.stringify(seedData);
-
-module.exports = stringData;
+module.exports = seedData;

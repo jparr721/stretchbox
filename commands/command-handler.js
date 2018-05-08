@@ -5,8 +5,10 @@ const load = require('./load/load-data');
 
 const commandHandler = (command) => {
   let input = command.split(' ');
-  switch (input) {
-    case input[0] === 'generate':
+  console.log(input);
+  switch (input[0]) {
+    case 'generate':
+      console.log('HIT');
       if (input[1] === 'random') {
         let params = [input[2], input[3]];
         generate(input[1]);
@@ -15,15 +17,17 @@ const commandHandler = (command) => {
         generate(input[1]);
       } else usage();
       break;
-    case input[0] === 'load': {
+    case 'load': {
       let params = [input[2], input[3]];
       load(false, params);
       break;
     }
-    case input[0] === 'help':
+    case 'help':
+      console.log('help hit');
       usage();
       break;
     default:
+      console.log('Default hit');
       usage();
   }
 };

@@ -11,7 +11,7 @@ const usage = () => {
     Commands:
       generate [COMMAND]       Generate data to be used for your session (destroyed on close)
       Generate commands:
-        random                 Generate random data for testing api endpoints against (automatically loads)
+        random [INDEX] [TYPE] Generate random data for testing api endpoints against (automatically loads)
         config                 Generate a blank config file to enter data into
 
       creds                    Show the elasticsearch login credentials and connection string

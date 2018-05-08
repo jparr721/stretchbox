@@ -1,72 +1,28 @@
-const createIndex = require('./create-index');
-const deleteIndex = require('./delete-index');
-const generateData = require('./generate-data');
-const generateConfig = require('./generate-config');
-const loadData = require('./load-data');
-const init = require('./init');
-const build = require('./build');
-const fs = require('fs');
+const readline = require('readline-sync');
+const options = require('../commands/options');
+const commandHandler = require('../commands/command-handler');
+const cleanup = require('./cleanup');
 
 
-const usage = () => {
-  console.log(
-    `
-  node bin/init.js [OPTION]
-
-  OPTIONS --------------------------------------------------------------
-    createIndex   [NAME]            Create the index
-    deleteIndex   [NAME]            Delete the index
-    init          [NAME], [TYPE]    Set up the environment
-    build                           Build and run all containers
-    generate [OPTION]
-      config                        Generates a new config file if none exists
-      bulk [NAME], [TYPE]           Generates new bulk data for an Elasticsearch instance (requires config)`);
+const cli = () => {
+  let option = '';
+  console.log('Interpreter is now running! For help type \'help\'');
+  while (option !== 'exit') {
+    option = readline.question('> ');
+    options.options.forEach((opt) => {
+      if (option.includes(opt)) commandHandler(option);
+    });
+  }
+  let save = readline.question('Save elasticsearch data for future sessions?(y/n): ');
+  if (save === 'n' | save === 'N') {
+    console.log('Cleaning up, please wait...');
+    cleanup(true);
+  } else if (save === 'y' | save === 'Y') {
+    console.log('Cleaning up and saving data...');
+    cleanup(false);
+    console.log(`Docker cleaned, data saved to ${__dirname}../elasticdata directory`);
+  }
+  console.log('Thanks for stopping by, space cowboy 🚀');
 };
 
-switch (process.argv[2]) {
-  case 'createIndex':
-    if (process.argv[3] !== undefined) {
-      let index = process.argv[3];
-      createIndex(index).then((resp) => console.log(resp))
-        .catch((e) => console.log(e));
-    } else usage();
-    break;
-  case 'deleteIndex':
-    if (process.argv[3] !== undefined) {
-      deleteIndex(process.argv[3])
-        .then((resp) => console.log(resp))
-        .catch((e) => console.log(e));
-    } else usage();
-    break;
-  case 'generate':
-    if (process.argv[3] === 'config') generateConfig();
-    else if (process.argv[3] === 'bulk') {
-      generateData();
-      loadData(process.env[4], process.env[5]);
-    } else usage();
-    break;
-  // case 'init':
-  //   init();
-  //   break;
-  case 'build':
-    // init(type, index);
-    build();
-    break;
-  // case 'reset':
-  //   console.log('Resetting');
-  //   if (process.argv[3] !== null) {
-  //     deleteIndex(process.argv[3]);
-  //     fs.unlinkSync(`${__filename}bin/cats.json`);
-  //   }
-  //   usage();
-  //   break;
-  case 'help':
-    console.log('Help --------------------------');
-    usage();
-    break;
-  default:
-    console.log('Invalid option selected');
-    usage();
-    break;
-
-}
+module.exports = cli;

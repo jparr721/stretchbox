@@ -1,5 +1,5 @@
 # Stretchbox v0.6.20
-🚀 Elasticsearch local docker env for modular efficiency checks
+🚀 Elasticsearch local docker env for testing goodness
 
 ## What is this?
 This is a locally deployable and extensible system to check elasticsearch endpoints when you're testing your code. 

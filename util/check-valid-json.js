@@ -1,10 +1,9 @@
-const checkValidJson = (dataFile) => {
+const checkValidJSON = (dataFile) => {
   try {
-    JSON.parse(dataFile);
+    return JSON.parse(dataFile);
   } catch (e) {
-    return false;
+    console.error('Error in seedfile, cannot generate random data!');
   }
-  return true;
 };
 
-module.exports = checkValidJson;
+module.exports = checkValidJSON;

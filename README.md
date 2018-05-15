@@ -1,6 +1,8 @@
 # Stretchbox v1.2.14
 🚀 Elasticsearch local docker env for testing goodness
 
+This system is not working right now. I haven't had time to fix some glaring async bugs with it. Will get to it when time permits.
+
 ## What is this?
 This is a locally deployable and extensible system to check elasticsearch endpoints when you're testing your code. This also provides a way for testing data. You can upload your data, and check it against the provided endpoints, or you can use your own code, and run the `creds` command and build your connection string.
 

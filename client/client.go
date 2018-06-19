@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/olivere/elastic"
+	"github.com/pkg/errors"
 )
 
 // Connector - The elasticsearch client
@@ -39,6 +40,9 @@ func (c *Connector) connect() *elastic.Client {
 
 	client, err := elastic.NewClient(elastic.SetURL(connectionString))
 	if err != nil {
+		cause := errors.New("Failed to connect to elasticsearch")
+		err := errors.WithStack(cause)
+
 		panic(err)
 	}
 
@@ -57,6 +61,37 @@ func (c *Connector) checkHealth() (string, error) {
 	}
 
 	return fmt.Sprintf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number), nil
+}
+
+// Checks if an index exists, and creates it if it doesn't
+func (c *Connector) checkIndex(index, mapping string) bool {
+	if len(mapping) == 0 {
+		cause := errors.New("Mapping is not valid")
+		mes := errors.WithMessage(cause, "Please add a valid mapping")
+		fmt.Println(mes)
+	}
+	client := *c.connect()
+	ctx := context.Background()
+
+	exists, err := client.IndexExists(index).Do(ctx)
+	if err != nil {
+		cause := errors.New("Index does not exist")
+		mes := errors.WithMessage(cause, "Attempting to create the index...")
+		fmt.Println(mes)
+	}
+
+	if !exists {
+		_, err := client.CreateIndex(index).BodyString(mapping).Do(ctx)
+		if err != nil {
+			cause := errors.New("Failed to create index")
+			err := errors.WithStack(cause)
+
+			panic(err)
+		}
+	}
+
+	fmt.Printf("Index: %s has been successfully created with the provided mapping", index)
+	return true
 }
 
 // The API functions

@@ -1,9 +1,11 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -13,10 +15,11 @@ import (
 
 // Connector - The elasticsearch client
 type Connector struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Host             string `json:"host"`
+	Port             string `json:"port"`
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	ConnectionString string `json:"connection_string"`
 }
 
 // Load data from .env file into the client
@@ -36,9 +39,9 @@ func (c *Connector) initializeClient() {
 func (c *Connector) connect() *elastic.Client {
 	fmt.Println("Connecting to local cluster...")
 	c.initializeClient()
-	connectionString := fmt.Sprintf("http://%s:%s@%s:%s", c.Username, c.Password, c.Host, c.Port)
+	c.ConnectionString = fmt.Sprintf("http://%s:%s@%s:%s", c.Username, c.Password, c.Host, c.Port)
 
-	client, err := elastic.NewClient(elastic.SetURL(connectionString))
+	client, err := elastic.NewClient(elastic.SetURL(c.ConnectionString))
 	if err != nil {
 		cause := errors.New("Failed to connect to elasticsearch")
 		err := errors.WithStack(cause)
@@ -95,6 +98,16 @@ func (c *Connector) checkIndex(index, mapping string) bool {
 }
 
 // The API functions
-func search() {
+func (c *Connector) search(index string, query []byte) *http.Response {
+	q := bytes.NewReader(query)
+	s := c.ConnectionString + "/index/"
+	t := "application/json"
+	resp, err := http.Post(s, t, q)
+	if err != nil {
+		cause := errors.New("Elasticsearch Query Failed")
+		err := errors.WithStack(cause)
+		panic(err)
+	}
 
+	return resp
 }

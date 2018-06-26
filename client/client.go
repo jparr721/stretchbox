@@ -139,6 +139,8 @@ func (c *Connector) upload(index, indexType string, data []byte) {
 	q := fmt.Sprintf("%s/%s/%s/", index, indexType, d)
 	byteData := bytes.NewBuffer(data)
 	putRequest(q, byteData)
+	
+	fmt.Printf("Index data has been uploaded...")
 }
 
 func (c *Connector) delete(index string) {

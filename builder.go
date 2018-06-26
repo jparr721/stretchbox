@@ -1,5 +1,5 @@
 package main
 
-func buildInstance() {
+func Build() {
 
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +21,7 @@ type Connector struct {
 	Username         string `json:"username"`
 	Password         string `json:"password"`
 	ConnectionString string `json:"connection_string"`
+	QueryAddress     string `json:"query_address"`
 }
 
 // Load data from .env file into the client
@@ -34,6 +36,7 @@ func (c *Connector) initializeClient() {
 	c.Port = os.Getenv("PORT")
 	c.Username = os.Getenv("USERNAME")
 	c.Password = os.Getenv("PASSWORD")
+	c.QueryAddress = fmt.Sprintf("http://%s:%s", c.Host, c.Port)
 }
 
 func (c *Connector) connect() *elastic.Client {
@@ -110,4 +113,44 @@ func (c *Connector) search(index string, query []byte) *http.Response {
 	}
 
 	return resp
+}
+
+func putRequest(url string, data io.Reader) {
+	request := http.Client{}
+	req, err := http.NewRequest(http.MethodPut, url, data)
+	if err != nil {
+		cause := errors.New("Failed to create http request")
+		err := errors.WithStack(cause)
+		panic(err)
+	}
+
+	_, err = request.Do(req)
+	if err != nil {
+		cause := errors.New("Failed to execute PUT")
+		err := errors.WithStack(cause)
+		panic(err)
+	}
+}
+
+// Upload data to the ES instance
+func (c *Connector) upload(index, indexType string, data []byte) {
+	n := bytes.IndexByte(data, 0)
+	d := string(data[:n])
+	q := fmt.Sprintf("%s/%s/%s/", index, indexType, d)
+	byteData := bytes.NewBuffer(data)
+	putRequest(q, byteData)
+}
+
+func (c *Connector) delete(index string) {
+	ctx := context.Background()
+	client := c.connect()
+
+	_, err := client.DeleteIndex(index).Do(ctx)
+	if err != nil {
+		cause := errors.New("Failed to delete index")
+		err := errors.WithStack(cause)
+		panic(err)
+	}
+
+	fmt.Printf("Index %s successfully deleted", index)
 }
